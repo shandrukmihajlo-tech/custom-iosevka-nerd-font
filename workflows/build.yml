@@ -1,0 +1,50 @@
+name: Build Custom Iosevka
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your repository
+        uses: actions/checkout@v4
+        with:
+          path: config-repo
+
+      - name: Checkout Iosevka source
+        uses: actions/checkout@v4
+        with:
+          repository: be5invis/Iosevka
+          path: Iosevka
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install ttfautohint
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ttfautohint
+
+      - name: Copy config to build directory
+        run: |
+          if [ -f config-repo/private-build-plans.toml ]; then
+            cp config-repo/private-build-plans.toml Iosevka/
+          elif [ -f config-repo/buildPlans.toml ]; then
+            cp config-repo/buildPlans.toml Iosevka/private-build-plans.toml
+          else
+            echo "Файл конфігурації TOML не знайдено в корені репозиторію!" && exit 1
+          fi
+
+      - name: Install dependencies and build
+        run: |
+          cd Iosevka
+          npm install
+          npm run build -- --jCmd=2 ttf::IosevkaCustom
+
+      - name: Upload Font Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Iosevka-Custom-CapCut
+          path: Iosevka/dist/
