@@ -17,9 +17,9 @@ css = 400
 [buildPlans.IosevkaCustom.widths.normal]
 shape = 500
 menu = 500
-css = 500
+css = "normal"
 
 [buildPlans.IosevkaCustom.slopes.upright]
 angle = 0
-menu = 0
-css = 0
+menu = "upright"
+css = "normal"
